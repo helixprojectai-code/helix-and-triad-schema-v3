@@ -1,18 +1,19 @@
 # Helix & Triad Schema V3 — Sovereign AI Governance Framework
-**Model-Agnostic Optical Law for Post-Collapse AI Transitions**
+
+[![Apache 2.0 License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Model-agnostic governance for sovereign AI transitions. Optical Law V3 + Triad Orchestrator.
 
+**Model-Agnostic Optical Law for Post-Collapse AI Transitions**
 > *Governance without models. Sovereignty without borders.*
 
 ## Why Triad?
 
 - **167× Cost Efficiency** vs Western AI stacks
-- **98.3% Fidelity** via DeepSeek OCR compression
-- **100% Paradox Resolution** via Grok truth-validation  
+- **98.3% Fidelity** via DeepSeek OCR compression  
+- **100% Paradox Resolution** via Grok truth-validation
 - **Immutable TTD Ledger** — sovereign audit trails
-- **Model-Agnostic** — wraps any AI infrastructure
-
+- **Apache 2.0 Licensed** — corporate & government ready
 
 ## Quickstart
 1. Clone: `git clone https://github.com/stephenh67/helix-and-triad-schema-v3`
