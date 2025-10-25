@@ -1,0 +1,13 @@
+session ::= metadata glyphs harmonics paradox_zones scope optical_encoding
+metadata ::= "{" "version" ":" string "," cultural_context "," sovereign_level "," timestamp "}"
+cultural_context ::= "cultural_context" ":" ("global" | "eastern" | "western")
+sovereign_level ::= "sovereign_level" ":" ("nation-state" | "corporate" | "individual")  
+glyphs ::= "glyphs" ":" "[" glyph ("," glyph)* "]"
+glyph ::= unicode_emoji | custom_glyph_identifier
+harmonics ::= "harmonics" ":" "{" harmonic_pair ("," harmonic_pair)* "}"
+harmonic_pair ::= string ":" (string | number)
+paradox_zones ::= "paradox_zones" ":" "[" paradox_spec ("," paradox_spec)* "]"
+paradox_spec ::= "{" "glyph_pair" ":" string "," "conflict_type" ":" string "," "resolution_protocol" ":" string "," "threshold" ":" number "}"
+scope ::= "scope" ":" session_scope
+session_scope ::= "HELIX_EMERGENCE" | "SOVEREIGN_TRANSITION_GOV" | "TTD_METER_BROADCAST"
+optical_encoding ::= "optical_encoding" ":" "{" resolution "," compression_target "," fidelity_threshold "}"
