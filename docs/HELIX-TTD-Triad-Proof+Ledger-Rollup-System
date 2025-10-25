@@ -1,0 +1,257 @@
+💡 **INSIGHT — Documentation Scope**
+Here’s a full operational doc for your now-verified **HELIX-TTD Triad Proof + Ledger Rollup System**. It reads like internal runbook documentation — production-ready, Markdown format, and aligned with your Helix glyph conventions.
+
+---
+
+# 📚 HELIX-TTD Proof & Ledger Pipeline
+
+**Version:** v1.0-MVP (2025-10-25)
+**Author:** Helix-TTD Core Ops
+**Status:** ✅ Operational / Verified
+**Namespace:** `ttd-proof`
+
+---
+
+## 🔗 1. System Purpose
+
+This pipeline produces **verifiable, cryptographically signed session outputs** from the Triad Orchestrator, stores them as immutable ledger capsules, and aggregates them daily into **Merkle-root rollups**.
+Each proof capsule is hardware-signed (ED25519-SK / FIDO2 YubiKey) and validated with OpenSSH’s detached signature system.
+
+The process forms a **trust-by-design audit trail** linking every runtime session → ledger hash → daily Merkle root.
+
+---
+
+## ⚙️ 2. System Layout
+
+```
+helix-and-triad-schema-v3/
+├─ src/triad_orchestrator_mvp.py       # Execution engine
+├─ out/                                # Live session outputs (.json, .sig)
+├─ ledger/<ledger_hash>/               # Immutable capsules
+├─ rollups/YYYY-MM-DD/                 # Daily Merkle roots + signatures
+├─ tools/merkle_rollup.py              # Rollup builder
+├─ Makefile                            # Automation commands
+└─ ~/.ssh/
+   ├─ id_ed25519_sk                    # YubiKey-backed private key
+   ├─ id_ed25519_sk.pub                # Public key
+   └─ allowed_signers                  # Registry of trusted identities
+```
+
+---
+
+## 🧩 3. Key Roles
+
+| Component                | Function                           | Mode          |
+| ------------------------ | ---------------------------------- | ------------- |
+| **Triad Orchestrator**   | Generates JSON session proof       | Deterministic |
+| **SSH signer (Windows)** | FIDO2 hardware signature           | ED25519-SK    |
+| **SSH verifier (WSL)**   | Offline cryptographic verification | stdin form    |
+| **Ledger Store**         | Immutable per-hash capsule         | Local FS      |
+| **Merkle Rollup**        | Aggregates hashes → root           | Daily cron    |
+| **Allowed Signers**      | Registry of trusted public keys    | Human-audited |
+
+---
+
+## 🚀 4. Operational Flow
+
+### 4.1 Generate Proof
+
+```bash
+make proof
+```
+
+Runs orchestrator → produces `out/result.json`, `out/hash.txt`, `out/envelope.json`.
+
+---
+
+### 4.2 Sign Proof (on Windows)
+
+From PowerShell:
+
+```powershell
+make windows-sign-out
+# Copy echoed command and run it:
+ssh-keygen -Y sign -f $env:USERPROFILE\.ssh\id_ed25519_sk -n ttd-proof "\\wsl.localhost\Ubuntu\mnt\GitHub\helix-and-triad-schema-v3\out\result.json"
+```
+
+Result: `out/result.json.sig`
+
+---
+
+### 4.3 Verify Proof (in WSL)
+
+```bash
+make verify
+```
+
+Shows:
+
+```
+Good "ttd-proof" signature for sbhop@helix with ED25519-SK key ...
+```
+
+---
+
+### 4.4 Append to Ledger
+
+```bash
+make append
+```
+
+Creates `ledger/<ledger_hash>/` with:
+
+```
+result.json
+result.json.sig
+envelope.json
+AUDIT.md
+```
+
+Output:
+
+```
+Ledger append complete: ttd_ledger_v1_<hash>
+```
+
+---
+
+### 4.5 Daily Rollup
+
+```bash
+make rollup
+```
+
+Writes under `rollups/YYYY-MM-DD/`:
+
+```
+hashes.txt
+merkle_root.txt
+```
+
+---
+
+### 4.6 Sign Rollup (on Windows)
+
+```powershell
+make windows-sign-rollup
+# Copy/run:
+ssh-keygen -Y sign -f $env:USERPROFILE\.ssh\id_ed25519_sk -n ttd-proof "\\wsl.localhost\Ubuntu\mnt\GitHub\helix-and-triad-schema-v3\rollups\2025-10-25\merkle_root.txt"
+```
+
+Produces `merkle_root.txt.sig`
+
+---
+
+### 4.7 Verify Rollup (in WSL)
+
+```bash
+make verify-rollup
+```
+
+Expected:
+
+```
+Good "ttd-proof" signature for sbhop@helix ...
+Rollup verify: OK
+```
+
+---
+
+## 🧠 5. Trust Model
+
+| Layer         | Guarantee                     | Mechanism                     |
+| ------------- | ----------------------------- | ----------------------------- |
+| **Session**   | Authentic output              | SHA3-256 + deterministic JSON |
+| **Ledger**    | Immutability                  | Hash-named directory          |
+| **Signature** | Hardware-anchored proof       | YubiKey ED25519-SK            |
+| **Rollup**    | Daily integrity               | Merkle root aggregation       |
+| **Verify**    | Human+machine reproducibility | `ssh-keygen -Y verify`        |
+
+---
+
+## 🛡️ 6. Safety and Governance
+
+* **Least privilege**: Windows signer holds private key; WSL only verifies.
+* **Immutable ledger**: never modify `ledger/<hash>/` once signed.
+* **OpenSSH namespace** `ttd-proof` prevents cross-context key replay.
+* **Time-stamped rollups** provide temporal ordering.
+* **CI Policy**: build fails if `make verify` or `make verify-rollup` fails.
+
+---
+
+## ⏱️ 7. Daily Automation Schedule (Optional)
+
+Add to `/etc/cron.daily/helix-ledger-rollup` (inside WSL):
+
+```bash
+#!/bin/bash
+cd /mnt/GitHub/helix-and-triad-schema-v3 || exit 1
+make rollup > /tmp/helix-rollup.log 2>&1
+```
+
+Sign manually on Windows once per day, then verify in WSL.
+
+---
+
+## 🔄 8. Maintenance Cycle
+
+| Task                   | Frequency       | Tool                 |
+| ---------------------- | --------------- | -------------------- |
+| Run Triad Orchestrator | As needed       | `make proof`         |
+| Verify capsules        | Continuous      | `make verify`        |
+| Append ledger          | After signing   | `make append`        |
+| Roll Merkle root       | Daily           | `make rollup`        |
+| Sign rollup            | Daily (Windows) | `ssh-keygen -Y sign` |
+| Verify rollup          | Daily (WSL)     | `make verify-rollup` |
+
+---
+
+## ⚖️ 9. Ethical Footing
+
+Helix-TTD governance principle: **Custody before trust**.
+No opaque authority, no unverifiable claim. Each proof capsule is verifiable by any party with the public key.
+
+---
+
+## 🎯 10. Quick Reference
+
+| Action           | WSL Command          | Windows Command            |
+| ---------------- | -------------------- | -------------------------- |
+| Run orchestrator | `make proof`         | —                          |
+| Sign proof       | —                    | `make windows-sign-out`    |
+| Verify proof     | `make verify`        | —                          |
+| Append ledger    | `make append`        | —                          |
+| Rollup daily     | `make rollup`        | —                          |
+| Sign rollup      | —                    | `make windows-sign-rollup` |
+| Verify rollup    | `make verify-rollup` | —                          |
+
+---
+
+## 🧾 Example Output Snapshot
+
+```
+Good "ttd-proof" signature for sbhop@helix with ED25519-SK key SHA256:pVcqAXE6pZjLPB35oM2oTNRcZIscES4Siq0RZSuDoeE
+Rollup verify: OK
+
+Ledger append complete: ttd_ledger_v1_1e0e2b5938348a5a40aa244782a17ffe1f197acde3de405686aa9b8692250b3d
+```
+
+---
+
+### ✅ Summary
+
+The Helix-TTD Triad Ledger pipeline is now:
+
+* **Reproducible** (deterministic sessions)
+* **Hardware-anchored** (YubiKey signing)
+* **Cryptographically auditable** (SSH verify)
+* **Ledger-based** (immutable capsules)
+* **Merkle-sealed** (daily rollups)
+* **Cross-boundary** (Windows sign ↔ WSL verify)
+
+This is the first fully operational, **model-agnostic governance proof chain** built under the Helix ethos.
+
+---
+
+HGL TAGS →
+📚 KNOWLEDGE | 🔍 INVESTIGATE | 🎯 TARGET | ✅ VALIDATE | 🔗 INTEGRATE | 🛡️ SAFEGUARD | ⚖️ ETHICS | 🔄 ITERATE
