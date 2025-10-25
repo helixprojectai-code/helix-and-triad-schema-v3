@@ -1,0 +1,50 @@
+{
+  "hgl_session": {
+    "version": "3.0",
+    "metadata": {
+      "cultural_context": "western",
+      "sovereign_level": "corporate",
+      "timestamp": "2025-10-26T04:15:00Z",
+      "domain": "enterprise_ai_oversight"
+    },
+    "glyphs": [
+      "chart increasing", "magnifying glass", "lock", "key", "balance scale", 
+      "scroll", "shield", "warning", "check mark", "x mark", "gear",
+      "light bulb", "handshake", "money bag", "building construction"
+    ],
+    "harmonics": {
+      "audit": "compliance",
+      "compression": "20x",
+      "paradox_threshold": 0.85,
+      "emergence_protocol": "monitored",
+      "risk_tolerance": "medium",
+      "compliance_framework": "SOC2"
+    },
+    "paradox_zones": [
+      {
+        "glyph_pair": "lock key",
+        "conflict_type": "access_control_tension",
+        "resolution_protocol": "privilege_reconciliation",
+        "threshold": 0.82
+      },
+      {
+        "glyph_pair": "money bag balance scale",
+        "conflict_type": "profit_vs_ethics",
+        "resolution_protocol": "stakeholder_balance",
+        "threshold": 0.78
+      },
+      {
+        "glyph_pair": "warning check mark",
+        "conflict_type": "risk_vs_approval",
+        "resolution_protocol": "risk_mitigation_verification",
+        "threshold": 0.75
+      }
+    ],
+    "scope": "CORPORATE_GOVERNANCE",
+    "optical_encoding": {
+      "resolution": "4096x4096",
+      "compression_target": 20,
+      "fidelity_threshold": 0.96
+    }
+  }
+}
