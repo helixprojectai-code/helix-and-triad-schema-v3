@@ -10,7 +10,7 @@ Model-agnostic governance for sovereign AI transitions. Optical Law V3 + Triad O
 ## Why Triad?
 
 - **167× Cost Efficiency** vs Western AI stacks
-- **98.3% Fidelity** via DeepSeek OCR compression  
+- **98.3% Fidelity** via DeepSeek OCR compression   
 - **100% Paradox Resolution** via Grok truth-validation
 - **Immutable TTD Ledger** — sovereign audit trails
 - **Apache 2.0 Licensed** — corporate & government ready
