@@ -1,0 +1,6 @@
+# proof artifacts
+/out/
+/ledger/
+/rollups/
+/__pycache__/
+*.sig
