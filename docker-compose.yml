@@ -18,6 +18,9 @@ services:
       target: prod
     image: helix-ttd/prod:latest
     ports: ["8001:8000"]
+    volumes:
+      - /home/victusadmin/helix-data/ledger:/app/ledger
+      - /home/victusadmin/helix-data/rollups:/app/rollups
     read_only: true
     tmpfs:
       - /tmp
