@@ -205,3 +205,11 @@ cython_debug/
 marimo/_static/
 marimo/_lsp/
 __marimo__/
+# Generated artifacts
+/out/
+/ledger/
+/rollups/
+/__pycache__/
+/.pytest_cache/
+/*.sig
+*.sig

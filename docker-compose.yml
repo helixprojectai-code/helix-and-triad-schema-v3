@@ -1,0 +1,25 @@
+services:
+  triad-api-dev:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: dev
+    image: helix-ttd/dev:latest
+    ports: ["8000:8000"]
+    volumes:
+      - .:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+
+  triad-api-prod:
+    build:
+      context: .
+      dockerfile: docker/Dockerfile
+      target: prod
+    image: helix-ttd/prod:latest
+    ports: ["8001:8000"]
+    read_only: true
+    tmpfs:
+      - /tmp
+    environment:
+      - PYTHONUNBUFFERED=1
